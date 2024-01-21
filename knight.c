@@ -101,7 +101,7 @@ int move(int loc, int row, int col, int visitedList[])
     }
     // print the moves if led to a solution, i.e. the visitedList if full.
     sizeOfVisited = sizeof(visitedList) / sizeof(visitedList[0]);
-    if (sizeOfVisted == row * col){
+    if (sizeOfVisited == row * col){
         printf("%d\n", visitedList);
     }
     return 0;
