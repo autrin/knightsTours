@@ -17,14 +17,13 @@ int moves[8][2] = {{-2, -1}, {-1, -2}, {1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}
 // int moves[8][2] = {{-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}};
 
 // int visited[5][5];
-int board[N][N];
 
 bool isValidMove(int x, int y, int board[N][N])
 {
     return (x >= 0 && x < N && y >= 0 && y < N && board[x][y] == 0);
 }
 
-void solveKTUtil(int x, int y, int visited, int board[N][N])
+void solveKTUtil(int x, int y, int visited, int board[N][N], int visitedArr[25])
 {
     // FIXME: Print the order of visiting the squares, not the chess board
     board[y][x] = visited;
@@ -37,10 +36,12 @@ void solveKTUtil(int x, int y, int visited, int board[N][N])
         possible = true;
         for (int i = 0; i < N; i++)
         {
-            for (int j = 0; j < N; j++)
-            {
-                printf("%d,", board[i][j]); // printing the tour
-            }
+            // for (int j = 0; j < N; j++)
+            // {
+                // printf("%d ", board[i][j]); // printing the tour
+                printf("%d ", visitedArr[i]); // printing the tour
+
+            // }
         }
         printf("\n");    // move to the next line for the next tour
         board[y][x] = 0; // backtracking
@@ -54,9 +55,8 @@ void solveKTUtil(int x, int y, int visited, int board[N][N])
 
         if (isValidMove(nextX, nextY, board))
         {
-
-            // board[nextY][nextX] = visited;
-            solveKTUtil(nextX, nextY, visited + 1, board);
+            visitedArr[visited - 1] = y * N + x + 1;
+            solveKTUtil(nextX, nextY, visited + 1, board, visitedArr);
 
         }
     }
@@ -67,18 +67,20 @@ void solveKT()
 {
     int x = 0;
     int y = 0;
-
+    int board[N][N];
+    
     for (int start = 0; start < BOARD_SIZE; start++)
     {
         for (int i = 0; i < BOARD_SIZE; i++)
         {
             board[start][i] = 0;
         }
-        int xx = x + 1;
-        int yy = y * 5;
-
-        solveKTUtil(xx, yy, 1, board);
-        yy += 1;
+        x = x + 1;
+        y = y * 5;
+        int visitedArr[25];
+        solveKTUtil(x, y, 1, board, visitedArr);
+        y += 1;
+        x += 1;
 
         // now for the next iteration that starts from another square,
         // we refresh the board by assigning -1 to all the squares in the
@@ -93,7 +95,3 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-
-// void move(x, y, int board[N][N]){
-
-// }
