@@ -1,8 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h> // has malloc()
 #include <string.h>
-#include <stdint.h>
-#include <math.h>
 #include <stdbool.h>
 
 /**
@@ -12,40 +9,29 @@
 
 #define N 5
 #define BOARD_SIZE N *N
-bool possible = false; // possible tour
 int moves[8][2] = {{-2, -1}, {-1, -2}, {1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}};
-// int moves[8][2] = {{-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}};
-
-// int visited[5][5];
 
 bool isValidMove(int x, int y, int board[N][N])
 {
-    return (x >= 0 && x < N && y >= 0 && y < N && board[x][y] == 0);
+    return (x >= 0 && x < N && y >= 0 && y < N && board[y][x] == 0);
 }
 
-void solveKTUtil(int x, int y, int visited, int board[N][N], int visitedArr[25])
+void allToursFromCurrentSquare(int x, int y, int visited, int board[N][N], int visitedArr[25])
 {
-    // FIXME: Print the order of visiting the squares, not the chess board
-    board[y][x] = visited;
-    // calculate the square
-    // int square = x + y * N; // doesnt seem right
-    // printf("%d", square);
-    // printf("\n");
-    if (visited == N * N)
-    { // found a tour
-        possible = true;
-        for (int i = 0; i < N; i++)
-        {
-            // for (int j = 0; j < N; j++)
-            // {
-                // printf("%d ", board[i][j]); // printing the tour
-                printf("%d ", visitedArr[i]); // printing the tour
+    board[y][x] = visited + 1;
+    visitedArr[visited] = y * N + x + 1;
 
-            // }
+    if (visited == N * N - 1)
+    { // found a tour
+        for (int i = 0; i < N * N; i++)
+        {
+            printf("%d ", visitedArr[i]); // printing the tour
         }
         printf("\n");    // move to the next line for the next tour
         board[y][x] = 0; // backtracking
-        return;          // response to the recursive call
+        visitedArr[visited] = -1;
+
+        return; // response to the recursive call
     }
 
     for (int i = 0; i < 8; i++)
@@ -55,43 +41,34 @@ void solveKTUtil(int x, int y, int visited, int board[N][N], int visitedArr[25])
 
         if (isValidMove(nextX, nextY, board))
         {
-            visitedArr[visited - 1] = y * N + x + 1;
-            solveKTUtil(nextX, nextY, visited + 1, board, visitedArr);
-
+            allToursFromCurrentSquare(nextX, nextY, visited + 1, board, visitedArr);
         }
     }
     board[y][x] = 0;
+    visitedArr[visited] = -1;
 }
 
-void solveKT()
+void tourStarter()
 {
-    int x = 0;
-    int y = 0;
     int board[N][N];
-    
-    for (int start = 0; start < BOARD_SIZE; start++)
-    {
-        for (int i = 0; i < BOARD_SIZE; i++)
-        {
-            board[start][i] = 0;
-        }
-        x = x + 1;
-        y = y * 5;
-        int visitedArr[25];
-        solveKTUtil(x, y, 1, board, visitedArr);
-        y += 1;
-        x += 1;
+    int visitedArr[BOARD_SIZE]; // Array to track the visited sequence
 
-        // now for the next iteration that starts from another square,
-        // we refresh the board by assigning -1 to all the squares in the
-        // inner for loop.
+    // Iterate over each cell of the board
+    for (int row = 0; row < N; row++)
+    {
+        for (int col = 0; col < N; col++)
+        {
+            // Reset the board and visited array for a new tour
+            memset(board, 0, sizeof(board));
+            memset(visitedArr, -1, sizeof(visitedArr));
+            // Start a new tour from the current cell
+            allToursFromCurrentSquare(col, row, 0, board, visitedArr);
+        }
     }
-    // solveKTUtil(x-1, y-1, 1, board);
 }
 
 int main(int argc, char *argv[])
 {
-    solveKT();
+    tourStarter();
     return 0;
 }
-
