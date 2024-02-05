@@ -4,7 +4,7 @@
 
 /**
  * This is the Knight's Tour problem in C.
- * This program will output all the Knight's Tours on any given board size.
+ * This program will output all the Knight's Tours on a 5x5 board size.
  */
 
 #define N 5
